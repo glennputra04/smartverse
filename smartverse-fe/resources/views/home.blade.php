@@ -1,13 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('layouts.app')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NeuroNote</title>
-
-    <link href="/css/bootstrap.min.css" rel="stylesheet">
-
+@section('title', 'Home - NeuroNote')
+@push('styles')
     <style>
         body {
             background: #f3f4f6;
@@ -19,24 +13,6 @@
 
         .custom-black {
             color: black;
-        }
-
-        .custom-header {
-            background: #60A5FA;
-        }
-
-        .login-btn {
-            background: #ABD0FF;
-            color: white;
-            border-radius: 8px;
-            padding: 6px 16px;
-            transition: 0.3s;
-        }
-
-        .login-btn:hover {
-            background: #5c98dd;
-            color: white;
-            transform: translateY(-1px);
         }
 
         .hero {
@@ -137,13 +113,11 @@
             margin: auto;
         }
 
-
         .card-shadow {
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
             border: none;
             border-radius: 12px;
         }
-
 
         .icon-box {
             width: 70px;
@@ -165,25 +139,8 @@
             min-height: 230px;
         }
     </style>
-</head>
-
-<body>
-
-    <nav class="navbar navbar-expand-lg navbar-dark custom-header">
-        <div class="container">
-            <a class="navbar-brand fw-bold" href="#">
-                <img src="{{ asset('images/logo.png') }}" height="30" class="me-2">
-                NeuroNote
-            </a>
-
-            <div class="ms-auto d-flex align-items-center gap-3">
-                <a class="nav-link text-white" href="#">Home</a>
-                <a class="nav-link text-white" href="#">About Us</a>
-                <a class="btn login-btn btn-sm">Login</a>
-            </div>
-        </div>
-    </nav>
-
+@endpush
+@section('content')
     <section class="hero">
         <div class="hero-inner">
             <div class="row align-items-center">
@@ -226,8 +183,8 @@
     <section class="py-5">
         <div class="container">
             <h3 class="fw-bold mb-4 text-center">How NeuroNote Works?</h3>
-            <div class="row align-items-center justify-content-center flex-nowrap g-3">
-                <div class="col-md-4">
+            <div class="row align-items-center justify-content-center g-3">
+                <div class="col-md-3">
                     <div class="card how-card p-4 h-100">
                         <div class="d-flex">
                             <div class="me-3 text-center">
@@ -363,11 +320,4 @@
 
         </div>
     </section>
-
-    <footer class="text-center py-3 bg-light">
-        @ 2026 NeuroNote All Rights Reserved
-    </footer>
-
-</body>
-
-</html>
+@endsection

@@ -1,34 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Summary</title>
-
-    <link href="/css/bootstrap.min.css" rel="stylesheet">
-
+@extends('layouts.app')
+@section('title', 'Summary - NeuroNote')
+@push('styles')
     <style>
         body {
             background: #f3f4f6;
-        }
-
-        .custom-header {
-            background: #60A5FA;
-        }
-
-        .login-btn {
-            background: #7fb2ea;
-            color: white;
-            border-radius: 8px;
-            padding: 6px 16px;
-            transition: 0.3s;
-        }
-
-        .login-btn:hover {
-            background: #5c98dd;
-            color: white;
-            transform: translateY(-1px);
         }
 
         .file-box {
@@ -158,26 +133,8 @@
             min-height: 230px;
         }
     </style>
-</head>
-
-<body>
-    <section id="navbar">
-        <nav class="navbar navbar-expand-lg navbar-dark custom-header">
-            <div class="container">
-                <a class="navbar-brand fw-bold" href="#">
-                    <img src="{{ asset('images/logo.png') }}" height="30" class="me-2">
-                    NeuroNote
-                </a>
-
-                <div class="ms-auto d-flex align-items-center gap-3">
-                    <a class="nav-link text-white" href="#">Home</a>
-                    <a class="nav-link text-white" href="#">About Us</a>
-                    <a class="btn login-btn btn-sm">Login</a>
-                </div>
-            </div>
-        </nav>
-    </section>
-
+@endpush
+@section('content')
     <section id="summary" class="py-4">
         <div class="container">
 
@@ -351,10 +308,4 @@
             </div>
         </div>
     </section>
-
-    <footer class="text-center py-3 bg-light">
-        @ 2026 NeuroNote All Rights Reserved
-    </footer>
-</body>
-
-</html>
+@endsection
