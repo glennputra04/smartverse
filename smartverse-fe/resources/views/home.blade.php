@@ -1,5 +1,4 @@
 @extends('layouts.app')
-
 @section('title', 'Home - NeuroNote')
 @push('styles')
     <style>
@@ -16,9 +15,42 @@
         }
 
         .hero {
-            background: linear-gradient(220deg, #d9e7fc, #B8D8FF);
+            background: linear-gradient(200deg, #ffffff, #B8D8FF);
             padding: 70px 0;
             color: white;
+        }
+
+        .hero-inner {
+            max-width: 1200px;
+            margin: auto;
+            padding: 0 40px;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            line-height: 1.2;
+        }
+
+        .hero h1 span {
+            font-size: 3.5rem;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-top: 20px;
+        }
+
+        .btn-upload {
+            background: #60A5FA;
+            color: white;
+            border-radius: 8px;
+            transition: 0.3s;
+        }
+
+        .btn-upload:hover {
+            background: #5c98dd;
+            color: white;
+            transform: translateY(-1px);
         }
 
         .how-card {
@@ -43,10 +75,30 @@
 
         .upload-box {
             border: 2px dashed #8ab0e6;
-            border-radius: 15px;
+            border-radius: 16px;
             background: white;
-            padding: 60px 20px;
+            padding: 70px 30px;
             text-align: center;
+        }
+
+        .upload-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            color: grey;
+            font-weight: 600;
+            transition: 0.25s;
+        }
+
+        .upload-action:hover {
+            color: black;
+            transform: translateY(-2px);
+        }
+
+        .upload-formats img {
+            opacity: 0.6;
+            margin-right: 6px;
         }
 
         .upload-icon-wrap {
@@ -87,9 +139,10 @@
         }
     </style>
 @endpush
+
 @section('content')
     <section class="hero">
-        <div class="container">
+        <div class="hero-inner">
             <div class="row align-items-center">
 
                 <div class="col-md-6">
@@ -101,17 +154,17 @@
 
                     </h1>
 
-                    <p class="mt-3 custom-black">
+                    <p class="mt-4 mb-4 custom-black">
                         Perfect for busy students. Save time, study more.
                     </p>
 
-                    <div class="mt-4 d-flex gap-3 flex-wrap">
+                    <div class="mt-5 d-flex gap-4 flex-wrap">
                         <button class="btn btn-primary btn-lg me-3 d-flex align-items-center">
                             <img src="{{ asset('images/folder.png') }}" height="22" class="me-2">
                             Upload PPT
                         </button>
 
-                        <button class="btn btn-primary btn-lg me-3 d-flex align-items-center">
+                        <button class="btn btn-upload btn-lg me-3 d-flex align-items-center">
                             <img src="{{ asset('images/upload.png') }}" height="22" class="me-2">
                             Upload Video
                         </button>
@@ -119,8 +172,8 @@
                     </div>
                 </div>
 
-                <div class="col-md-6 text-center">
-                    <img src="{{ asset('images/hero.png') }}" class="img-fluid" style="max-height:320px">
+                <div class="col-md-6 d-flex justify-content-center align-items-center">
+                    <img src="{{ asset('images/hero.png') }}" class="img-fluid" style="max-height:350px">
                 </div>
 
             </div>
@@ -135,75 +188,58 @@
                     <div class="card how-card p-4 h-100">
                         <div class="d-flex">
                             <div class="me-3 text-center">
-                                <div class="step-circle mb-2">1</div>
-                                <img src="{{ asset('images/upload_black.png') }}" width="38">
+                                <div class="step-circle mb-2">1</div> <img src="{{ asset('images/upload_black.png') }}"
+                                    width="38">
                             </div>
-
                             <div>
                                 <h5 class="fw-bold mb-1">Upload Files</h5>
-                                <p class="text-muted mb-0">
-                                    AI reads the files that you uploaded in the current session.
+                                <p class="text-muted mb-0"> AI reads the files that you uploaded in the current session.
                                 </p>
                             </div>
                         </div>
                     </div>
                 </div>
+                <div class="col-md-1 text-center d-none d-md-block"> <span><img src="{{ asset('images/arrow.png') }}"
+                            width="45"></span> </div>
 
-                <div class="col-md-1 text-center d-none d-md-block">
-                    <span><img src="{{ asset('images/arrow.png') }}" width="45"></span>
-                </div>
-
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <div class="card how-card p-4 h-100">
                         <div class="d-flex">
-
                             <div class="me-3 text-center">
-                                <div class="step-circle mb-2">2</div>
-                                <img src="{{ asset('images/edit.png') }}" width="38">
+                                <div class="step-circle mb-2">2</div> <img src="{{ asset('images/edit.png') }}"
+                                    width="38">
                             </div>
-
                             <div>
                                 <h5 class="fw-bold mb-1">AI Generates Summary</h5>
-                                <p class="text-muted mb-0">
-                                    AI will generate the summary based on what it reads.
-                                </p>
+                                <p class="text-muted mb-0"> AI will generate the summary based on what it reads. </p>
                             </div>
-
                         </div>
                     </div>
                 </div>
-
-                <div class="col-md-1 text-center d-none d-md-block">
-                    <span><img src="{{ asset('images/arrow.png') }}" width="45"></span>
-                </div>
-
-                <div class="col-md-3">
+                <div class="col-md-1 text-center d-none d-md-block"> <span><img src="{{ asset('images/arrow.png') }}"
+                            width="45"></span> </div>
+                <div class="col-md-4">
                     <div class="card how-card p-4 h-100">
                         <div class="d-flex">
-
                             <div class="me-3 text-center">
-                                <div class="step-circle mb-2">3</div>
-                                <img src="{{ asset('images/download.png') }}" width="38">
+                                <div class="step-circle mb-2">3</div> <img src="{{ asset('images/download.png') }}"
+                                    width="38">
                             </div>
-
                             <div>
                                 <h5 class="fw-bold mb-1">View & Download</h5>
-                                <p class="text-muted mb-0">
-                                    AI will give a summary in PDF format for you to view and download.
-                                </p>
+                                <p class="text-muted mb-0"> AI will give a summary in PDF format for you to view and
+                                    download. </p>
                             </div>
-
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
-
     <section class="pb-5">
         <div class="container">
             <div class="row justify-content-center">
-                <div class="col-md-8">
+                <div class="col-md-10">
 
                     <div class="upload-box">
 
@@ -213,10 +249,20 @@
 
 
                         <h4>Upload PPT / Video here</h4>
-                        <p class="text-muted">Drag & drop or click to choose file</p>
+                        <p class="text-muted" id="file-label">Drag & drop or click to choose file</p>
 
-                        <button class="btn btn-primary mt-3">Choose File</button>
+                        <input type="file" id="main-file-input" style="display: none;"
+                            accept=".ppt,.pptx,.pdf,.mp4,.avi">
 
+                        <button id="choose-btn" class="btn btn-primary mt-3"
+                            onclick="document.getElementById('main-file-input').click()">
+                            Choose File
+                        </button>
+
+                        <div id="loading-status" class="mt-3" style="display: none;">
+                            <div class="spinner-border text-primary spinner-border-sm" role="status"></div>
+                            <span class="ms-2">Processing your file...</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -224,7 +270,7 @@
     </section>
 
     <section class="py-5">
-        <div class="container text-center">
+        <div class="container-fluid text-center px-5">
 
             <h3 class="fw-bold mb-5">Why NeuroNote?</h3>
 
@@ -267,3 +313,58 @@
         </div>
     </section>
 @endsection
+
+@push('scripts')
+    <script>
+        const fileInput = document.getElementById('main-file-input');
+        const fileLabel = document.getElementById('file-label');
+        const loadingStatus = document.getElementById('loading-status');
+        const chooseBtn = document.getElementById('choose-btn');
+
+        fileInput.addEventListener('change', async function() {
+            if (this.files.length === 0) return;
+
+            const file = this.files[0];
+            fileLabel.innerText = "Selected: " + file.name;
+            chooseBtn.disabled = true;
+            fileInput.disabled = true;
+
+            // Buat FormData untuk dikirim
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('_token', '{{ csrf_token() }}'); // CSRF Protection Laravel
+
+            // Tampilkan loading
+            loadingStatus.style.display = 'block';
+
+            try {
+                const response = await fetch('/summarize', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    sessionStorage.setItem('last_summary', JSON.stringify(result));
+                    window.location.href = '/summary';
+                } else {
+                    alert("Error: " + (result.message || "Failed to process file"));
+                }
+            } catch (error) {
+                console.error(error);
+                alert("Connection to AI server failed.");
+            } finally {
+                loadingStatus.style.display = 'none';
+                resetUI();
+            }
+        });
+
+        function resetUI() {
+            chooseBtn.disabled = false;
+            fileInput.disabled = false;
+            chooseBtn.innerText = "Choose File";
+            loadingStatus.style.display = 'none';
+        }
+    </script>
+@endpush
