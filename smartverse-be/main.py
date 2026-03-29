@@ -11,14 +11,30 @@ import fitz
 from rapidocr_onnxruntime import RapidOCR
 from collections import Counter
 import re
+from fastapi import BackgroundTasks
+import torch
 
 app = FastAPI()
 ocr = RapidOCR()
 
 summarizer = pipeline(
     "summarization",
-    model="facebook/bart-large-cnn"
+    model="MBZUAI/LaMini-Flan-T5-248M",
+    device=-1 # 0 for GPU amd -1 for CPU
 )
+
+# summarizer.model = torch.quantization.quantize_dynamic(
+#     summarizer.model, {torch.nn.Linear}, dtype=torch.qint8
+# )
+
+def remove_temp_files(paths: list):
+    for path in paths:
+        try:
+            if os.path.exists(path):
+                os.remove(path)
+        except Exception as e:
+            print(f"Cleanup error: {e}")
+
 
 def extract_all_text(pdf_path):
     doc = fitz.open(pdf_path)
@@ -72,9 +88,14 @@ def extract_all_text(pdf_path):
 
 
 def clean_text(text):
+    text = " ".join(text.split())
 
     text = re.sub(r'http\S+', '', text)
     text = re.sub(r'\S+@\S+', '', text)
+
+    # Handle Rights Reserved
+    text = re.sub(r'\d{4}[\s\S]{0,70}?All\s+rights\s+reserved\.?', '', text, flags=re.IGNORECASE)
+    text = re.sub(r'(Adapted from|Source):?.*', '', text, flags=re.IGNORECASE)
 
     # Handle Bullet Point
     text = re.sub(r'\n\s*[\d\.\-\*\•>]+\s*', '. ', text)
@@ -124,8 +145,6 @@ def is_reference_slide(text):
         return True
 
     return False
-
-
 
 def filter_irrelevant_slides(slides):
 
@@ -196,48 +215,75 @@ def convert_ppt_to_pdf(input_path):
 
 
 def summarize_per_slide(slides):
-    slide_summaries = []
+    if not slides:
+        return []
 
-    for slide in slides:
-        content = clean_text(slide["content"])
+    all_contents = [clean_text(s["content"]) for s in slides]
+    all_topics = [generate_title_via_ai(c) for c in all_contents]
+    
+    prompts = [
+    f"Act as a student making study notes. Summarize the actual facts and definitions from this text in a short paragraph. "
+    f"Be direct and do not meta-describe the text: {c}" 
+    for c in all_contents
+]
 
-        topic = get_general_topic(content)
+    print(f"--- Processing {len(slides)} batches ---")
 
-        try:
-            result = summarizer(
-                content,
-                max_length=180,
-                min_length=60,
-                num_beams=4,
-                batch_size=4,
-                early_stopping=True,
-            )
+    try:
+        # Batch Processing
+        results = summarizer(
+            prompts,
+            max_length=150,
+            min_length=40,
+            num_beams=1,       
+            batch_size=4,      
+            truncation=True
+        )
 
-            summary_text = result[0]["summary_text"]
+        slide_summaries = []
+        for i, res in enumerate(results):
+            slide_summaries.append({
+                "topic": all_topics[i],
+                "slide_numbers": slides[i]["slide_numbers"],
+                "summary": res["summary_text"]
+            })
+            
+        return slide_summaries
 
-        except Exception as e:
-            summary_text = f"Error summarizing slides {slide['slide_numbers']}: {str(e)}"
+    except Exception as e:
+        print(f"Error summarizing: {str(e)}")
+        return []
+    
+def generate_title_via_ai(text):
+    if not text.strip():
+        return "Untitled Topic"
+    
+    prompt = f"Generate a short title (max 3 words) for this text: {text}"
+    
+    try:
+        result = summarizer(
+            prompt,
+            max_length=15,
+            min_length=3,
+            truncation=True
+        )
 
-        slide_summaries.append({
-            "topic" : topic,
-            "slide_numbers": slide["slide_numbers"],
-            "summary": summary_text
-        })
-
-    return slide_summaries
+        title = result[0]["summary_text"].strip()
+        title = re.sub(r'[^a-zA-Z0-9\s]', '', title)
+        return title.title() 
+    except Exception as e:
+        print(f"Error generating title: {e}")
+        return "General Topic"
 
 def get_general_topic(text):
-    # 1. Bersihkan teks tapi tetap pertahankan case asli untuk pengecekan
     clean = re.sub(r'[^a-zA-Z\s]', '', text)
     words = clean.split()
     
     if not words:
         return "General Discussion"
 
-    # Dictionary untuk menyimpan skor setiap kata
     word_scores = Counter()
 
-    # Ambil 5 kata pertama untuk diberikan bonus "Position"
     first_few_words = [w.upper() for w in words[:5]]
 
     for i, word in enumerate(words):
@@ -246,28 +292,22 @@ def get_general_topic(text):
             
         word_upper = word.upper()
         
-        # --- SISTEM SKORING ---
-        score = 1  # Skor dasar
-        
-        # A. Bonus jika ALL CAPS (biasanya judul atau singkatan penting)
+        score = 1  
+
         if word.isupper() and len(word) > 1:
             score += 2
             
-        # B. Bonus jika muncul di awal slide (kandidat kuat judul)
         if word_upper in first_few_words:
             score += 3
             
-        # C. Bonus jika diawali huruf kapital (Proper Noun / Title Case)
         elif word[0].isupper():
             score += 1
 
         word_scores[word.capitalize()] += score
 
-    # Ambil 2 teratas berdasarkan skor total
     most_common = word_scores.most_common(2)
     
     if most_common:
-        # Jika skor kata pertama jauh lebih tinggi, ambil satu saja agar lebih fokus
         if len(most_common) > 1 and most_common[0][1] > most_common[1][1] * 2:
             return most_common[0][0]
             
@@ -277,24 +317,30 @@ def get_general_topic(text):
     return "Untitled Topic"
 
 @app.post("/summarize")
-async def summarize_ppt(file: UploadFile = File(...)):
+async def summarize_ppt(background_tasks: BackgroundTasks, file: UploadFile = File(...)):
 
     print("1. Upload received")
-
     os.makedirs("temp", exist_ok=True)
 
     file_location = os.path.abspath(f"temp/{file.filename}")
-
     with open(file_location, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
     print("2. File saved:", file_location)
 
-    print("3. Converting PPT to PDF...")
-    convert_ppt_to_pdf(file_location)
+    if file.filename.lower().endswith(".pdf"):
+        print("3. File is already PDF, skipping conversion.")
+        pdf_path = file_location
+       
+        files_to_cleanup = [file_location]
+    else:
+        print("3. Converting PPT/PPTX to PDF...")
+        convert_ppt_to_pdf(file_location)
+        pdf_path = os.path.splitext(file_location)[0] + ".pdf"
+       
+        files_to_cleanup = [file_location, pdf_path]
 
-    pdf_path = os.path.splitext(file_location)[0] + ".pdf"
-    print("4. PDF created:", pdf_path)
+    print("4. Target PDF path:", pdf_path)
 
     print("5. Extracting text from PDF...")
     slides = extract_all_text(pdf_path)
@@ -316,6 +362,8 @@ async def summarize_ppt(file: UploadFile = File(...)):
     slide_summaries = summarize_per_slide(slides)
 
     print("9. Done summarizing")
+
+    background_tasks.add_task(remove_temp_files, files_to_cleanup)
 
     return {
         "total_slides": len(slide_summaries),
