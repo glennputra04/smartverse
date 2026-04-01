@@ -99,7 +99,7 @@
                         {{ $errors->first() }}
                     </div>
                 @endif
-                <form method="POST" action="{{ route('register.store') }}">
+                <form id="registerForm" method="POST" action="{{ route('register.store') }}">
                     @csrf
                     <div class="mb-3">
                         <label for="name" class="form-label">Nama</label>
@@ -144,11 +144,12 @@
                         <input type="password" id="confirmPassword" name="password_confirmation" class="form-control"
                             required>
                     </div>
-                    <button type="submit" class="btn register-btn w-100 text-white">Register</button>
+                    <button id="registerSubmitBtn" type="submit" class="btn register-btn w-100 text-white">Register</button>
                 </form>
             </div>
         </div>
     </div>
+    @include('component.loadingCircle')
 @endsection
 @push('scripts')
     <script>
@@ -168,5 +169,15 @@
                 text.innerText = "Show";
             }
         }
+
+        document.getElementById("registerForm").addEventListener("submit", function() {
+            const overlay = document.getElementById("loadingOverlay");
+            const submitBtn = document.getElementById("registerSubmitBtn");
+
+            overlay.classList.add("active");
+            overlay.setAttribute("aria-hidden", "false");
+            submitBtn.disabled = true;
+            submitBtn.innerText = "Loading...";
+        });
     </script>
 @endpush

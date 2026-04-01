@@ -120,7 +120,7 @@
                         {{ $errors->first() }}
                     </div>
                 @endif
-                <form method="POST" action="{{ route('login.store') }}">
+                <form id="loginForm" method="POST" action="{{ route('login.store') }}">
                     @csrf
                     <div class="mb-3">
                         <label for="email" class="form-label">Email</label>
@@ -145,11 +145,12 @@
                             Remember me
                         </label>
                     </div>
-                    <button type="submit" class="btn login-submit w-100 text-white">Login</button>
+                    <button id="loginSubmitBtn" type="submit" class="btn login-submit w-100 text-white">Login</button>
                 </form>
             </div>
         </div>
     </div>
+    @include('component.loadingCircle')
 @endsection
 @push('scripts')
     <script>
@@ -169,5 +170,15 @@
                 text.innerText = "Show";
             }
         }
+
+        document.getElementById("loginForm").addEventListener("submit", function() {
+            const overlay = document.getElementById("loadingOverlay");
+            const submitBtn = document.getElementById("loginSubmitBtn");
+
+            overlay.classList.add("active");
+            overlay.setAttribute("aria-hidden", "false");
+            submitBtn.disabled = true;
+            submitBtn.innerText = "Loading...";
+        });
     </script>
 @endpush
