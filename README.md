@@ -3,9 +3,11 @@
 FastAPI-based backend service with laravel frontend that extracts text from PowerPoint (.pptx) files and generates AI-based summaries using HuggingFace Transformers.
 
 ## Objectives
--
--
--
+- Help users quickly understand material without going through full PPTs or videos
+- Convert lengthy content into clear, essential summaries
+- Save time and improve learning efficiency
+- Highlight key points for review or exam/presentation preparation
+- Support self-learning with more accessible and practical information
 
 ---
 
