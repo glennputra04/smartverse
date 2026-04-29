@@ -26,6 +26,13 @@ FastAPI-based backend service that extracts text from PowerPoint (.pptx) files a
 
 ---
 
+## Project Structure
+
+- Frontend folder: smartverse-fe
+- Backend folder: smartverse-be
+
+---
+
 ## Installation
 
 ### Clone repository
