@@ -1,6 +1,11 @@
-# PPT Summarizer APP
+# NeuroNote Application
 
-FastAPI-based backend service that extracts text from PowerPoint (.pptx) files and generates AI-based summaries using HuggingFace Transformers.
+FastAPI-based backend service with laravel frontend that extracts text from PowerPoint (.pptx) files and generates AI-based summaries using HuggingFace Transformers.
+
+## Objectives
+-
+-
+-
 
 ---
 
