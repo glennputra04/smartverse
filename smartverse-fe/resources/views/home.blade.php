@@ -79,6 +79,7 @@
             background: white;
             padding: 70px 30px;
             text-align: center;
+            cursor: pointer;
         }
 
         .upload-action {
@@ -159,12 +160,12 @@
                     </p>
 
                     <div class="mt-5 d-flex gap-4 flex-wrap">
-                        <button class="btn btn-primary btn-lg me-3 d-flex align-items-center">
+                        <button id="btn-upload-ppt" class="btn btn-primary btn-lg me-3 d-flex align-items-center">
                             <img src="{{ asset('images/folder.png') }}" height="22" class="me-2">
                             Upload PPT
                         </button>
 
-                        <button class="btn btn-upload btn-lg me-3 d-flex align-items-center">
+                        <button id="btn-upload-video" class="btn btn-upload btn-lg me-3 d-flex align-items-center">
                             <img src="{{ asset('images/upload.png') }}" height="22" class="me-2">
                             Upload Video
                         </button>
@@ -183,9 +184,9 @@
     <section class="py-5">
         <div class="container">
             <h3 class="fw-bold mb-4 text-center">How NeuroNote Works?</h3>
-            <div class="row align-items-center justify-content-center g-3">
-                <div class="col-md-3">
-                    <div class="card how-card p-4 h-100">
+            <div class="row align-items-stretch justify-content-center g-2">
+                <div class="col-md-3 d-flex">
+                    <div class="card how-card p-4 h-100 w-100">
                         <div class="d-flex">
                             <div class="me-3 text-center">
                                 <div class="step-circle mb-2">1</div> <img src="{{ asset('images/upload_black.png') }}"
@@ -199,11 +200,11 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-1 text-center d-none d-md-block"> <span><img src="{{ asset('images/arrow.png') }}"
-                            width="45"></span> </div>
+                <div class="col-auto d-flex align-items-center"> <span><img src="{{ asset('images/arrow.png') }}"
+                            width="35"></span> </div>
 
-                <div class="col-md-4">
-                    <div class="card how-card p-4 h-100">
+                <div class="col-md-3 d-flex">
+                    <div class="card how-card p-4 h-100 w-100">
                         <div class="d-flex">
                             <div class="me-3 text-center">
                                 <div class="step-circle mb-2">2</div> <img src="{{ asset('images/edit.png') }}"
@@ -216,10 +217,10 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-1 text-center d-none d-md-block"> <span><img src="{{ asset('images/arrow.png') }}"
-                            width="45"></span> </div>
-                <div class="col-md-4">
-                    <div class="card how-card p-4 h-100">
+                <div class="col-auto d-flex align-items-center"> <span><img src="{{ asset('images/arrow.png') }}"
+                            width="35"></span> </div>
+                <div class="col-md-3 d-flex">
+                    <div class="card how-card p-4 h-100 w-100">
                         <div class="d-flex">
                             <div class="me-3 text-center">
                                 <div class="step-circle mb-2">3</div> <img src="{{ asset('images/download.png') }}"
@@ -241,7 +242,7 @@
             <div class="row justify-content-center">
                 <div class="col-md-10">
 
-                    <div class="upload-box">
+                    <div class="upload-box" id="upload-area">
 
                         <div class="upload-icon-wrap mb-3">
                             <img src="{{ asset('images/upload.png') }}" width="40">
@@ -316,6 +317,48 @@
 
 @push('scripts')
     <script>
+        const btnUploadPpt = document.getElementById('btn-upload-ppt');
+        const btnUploadVideo = document.getElementById('btn-upload-video');
+
+        // Klik Upload PPT
+        btnUploadPpt.addEventListener('click', function() {
+            fileInput.accept = ".ppt,.pptx,.pdf"; // filter PPT
+            fileInput.click();
+        });
+
+        // Klik Upload Video
+        btnUploadVideo.addEventListener('click', function() {
+            fileInput.accept = ".mp4,.avi"; // filter video
+            fileInput.click();
+        });
+
+        const uploadArea = document.getElementById('upload-area');
+
+        uploadArea.addEventListener('click', function(e) {
+            if (e.target.closest('button')) return
+
+            fileInput.click();
+        });
+
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = '#3b82f6';
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.style.borderColor = '#8ab0e6';
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                fileInput.dispatchEvent(new Event('change'));
+            }
+        });
+
         const fileInput = document.getElementById('main-file-input');
         const fileLabel = document.getElementById('file-label');
         const loadingStatus = document.getElementById('loading-status');
@@ -338,7 +381,7 @@
             loadingStatus.style.display = 'block';
 
             try {
-                const response = await fetch('/summarize', {
+                const response = await fetch('http://localhost:8001/summarize', {
                     method: 'POST',
                     body: formData
                 });
@@ -346,6 +389,7 @@
                 const result = await response.json();
 
                 if (response.ok) {
+                    result.file_name = file.name;
                     sessionStorage.setItem('last_summary', JSON.stringify(result));
                     window.location.href = '/summary';
                 } else {
