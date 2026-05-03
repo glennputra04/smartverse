@@ -151,10 +151,6 @@
                         <strong id="file-name">Example.pptx</strong>
                     </div>
 
-                    <button class="btn cancel p-0">
-                        <img src="{{ asset('images/cancel.png') }}" width="35">
-                    </button>
-
                 </div>
             </div>
 
