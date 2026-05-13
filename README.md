@@ -35,8 +35,40 @@ FastAPI-based backend service with laravel frontend that extracts text from Powe
 
 ## Project Structure
 
-- Frontend folder: smartverse-fe
-- Backend folder: smartverse-be
+- Backend (FastAPI): smartverse-be
+  - main.py
+  - requirements.txt
+  - temp/
+- Frontend (Laravel): smartverse-fe
+  - app/
+    - Http/
+      - Controllers/
+    - Models/
+    - Providers/
+    - Services/
+  - bootstrap/
+    - cache/
+  - config/
+  - database/
+    - factories/
+    - migrations/
+    - seeders/
+  - public/
+    - css/
+    - images/
+    - js/
+  - resources/
+    - css/
+    - js/
+    - views/
+  - routes/
+  - storage/
+    - app/
+    - framework/
+    - logs/
+  - tests/
+    - Feature/
+    - Unit/
 
 ---
 
