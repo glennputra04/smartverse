@@ -34,7 +34,8 @@ class SummarizerController extends Controller
 
     public function history()
     {
-        $user = Auth::user(); // ← use facade instead of helper
+        /** @var \App\Models\User|null $user */
+        $user = Auth::user();
 
         if (! $user) {
             $summaries = collect();
@@ -73,11 +74,24 @@ class SummarizerController extends Controller
 
     public function show($id)
     {
-        $user    = Auth::user();
+        /** @var \App\Models\User|null $user */
+        $user = Auth::user();
         $summary = Summary::where('id', $id)
                           ->where('user_id', $user?->id)
                           ->firstOrFail();
 
         return view('summary', compact('summary'));
+    }
+
+    public function destroy($id)
+    {
+        /** @var \App\Models\User|null $user */
+        $user = Auth::user();
+
+        Summary::where('id', $id)
+            ->where('user_id', $user?->id)
+            ->delete();
+
+        return redirect()->route('history')->with('status', 'Summary deleted successfully.');
     }
 }

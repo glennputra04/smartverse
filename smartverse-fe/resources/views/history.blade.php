@@ -378,7 +378,7 @@
                             View Summary
                         </a>
 
-                        <form action="{{ url('/summary/'.$summary->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this summary?');">
+                        <form action="{{ url('/summary/'.$summary->id) }}" method="POST" style="display:inline;" onsubmit="if (!confirm('Are you sure you want to delete this summary?')) return false; sessionStorage.removeItem('last_summary'); return true;">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="delete-btn">
